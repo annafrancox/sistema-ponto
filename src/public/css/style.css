@@ -1,0 +1,150 @@
+body, html {
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+}
+
+/* tela de login */
+.required:after {
+    content:" *"; 
+    color: red;
+  }
+.bodytela {
+    background-color:#1a2c24;
+    height: 100%;
+}
+.logologin {
+    padding-top: 10%;
+    margin-left: 34%;
+}
+.logininput {
+    align-items: center;
+    padding-bottom: 10px;
+    color:whitesmoke;
+}
+.loginbutton button {
+    height: 32px;
+    width: 100px;
+    font-size: 14px;
+}
+.loginbutton button a {
+    text-decoration: none !important;
+    color: white;
+}
+.loginbutton button a:hover {
+    color:#037649
+}
+.formlogin {
+    height: 210px;
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-top: 40px;
+    align-items: center;
+    word-wrap:unset;
+    background-color: #037649;
+    padding-bottom: 0 Im !important;
+}
+.senhahelp{
+    padding-left: 35%;
+}
+/* tela principal usuario */
+
+.navbarchanges {
+    background-color:#1a2c24 !important;
+    width: 100%;
+}
+.logosidebar img {
+    height: 50px;
+    width: 175px;
+    margin-left: 20px; 
+}
+.navbarchanges ul {
+    padding-left: 40%;
+}
+.navbarlink{
+    padding-right: 15px !important;
+}
+.navbarlink:hover{
+    color: #037649 !important;
+    text-decoration: overline;
+}
+.btn-logout{
+    border: none;
+    margin-left: 100px;
+    padding: 0;
+}
+.btn-logout:hover{
+    color: red;
+    background-color: transparent;
+}
+/* tela de historico de ponto */
+.horasTrabalhadas{
+    margin-top: 2%;
+    padding-top: 1%;
+    margin-left: 15%;
+    padding-left: .5%;
+    width: 255px;
+    display: inline-block !important;
+    border-style: solid !important;
+    border: #1a2c24;
+
+    font-size: 16px;
+    text-align: center;
+}
+.horasTrabalhadas p{
+    font-size: 16px;
+    margin-bottom: 0 !important;
+}
+.horasTrabalhadas small{
+    font-size: 10px;
+    padding-bottom: .5%;
+}
+.telacontainer {
+    padding-top: 3%;
+    width: 80%;
+    padding-left: 20%;
+}
+.nomeHistorico {
+    padding-left: 2%;
+    padding-bottom: 3%;
+}
+.btnExportar {
+    padding-left: 100%;
+    padding-bottom: 12px;
+}
+.btnAddPonto {
+    padding-left: 80%;
+    padding-bottom: 12px;
+}
+.btn-funcionario button{
+background-color: #00953f !important;
+}
+/* tela de registro de ponto */
+.registrochanges {
+    padding-top: 6%;
+    padding-left: 8%;
+}
+.registroinput {
+    padding-bottom: 20px;
+}
+.btnAddRegistro {
+    padding-left: 85%;
+    padding-bottom: 12px;
+}
+/* tela de funcionario RH */
+.tablechanges {
+    padding-top: 5%;
+    padding-left: 8%;
+    text-align: center;
+}
+.btnAddFuncionario {
+    padding-left: 80%;
+    padding-bottom: 12px;
+}
+.btn-add, .btn-edit, .btn-ban, .btn-delete {
+    height: 30px;
+    padding: 0px 12px 0px 12px;
+    margin-right: 2px;
+}
+.btn-add:hover, .btn-edit:hover, .btn-ban:hover, .btn-delete:hover{
+    color:whitesmoke;
+}

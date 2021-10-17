@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  <!-- CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.all.min.js"></script>
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/fe02716ff2.js" crossorigin="anonymous"></script>
+  <!-- moment -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+  <title>QQ | Edição de Ponto</title>
+  <link rel="sortcut icon" href="/static/img/favicon.ico" type="image/x-icon" />
+</head>
+
+<body container onload="carregaHistorico()">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light navbarchanges">
+    <a class="logosidebar">
+      <img src="/static/img/logo_qq.png" width="30" height="30" alt="">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li>
+          <a href="/registro/" class="nav-link text-white navbarlink">
+            Registrar Ponto
+          </a>
+        </li>
+        <li>
+          <a href="/historico/" class="nav-link active text-white navbarlink">
+            Histórico de Pontos
+          </a>
+        </li>
+        <li>
+          <a href="/listagem-funcionario/" class="nav-link text-white navbarlink">
+            Funcionários
+          </a>
+        </li>
+      </ul>
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn btn-outline-light btn-logout" title="Desconectar"><i
+            class="fas fa-sign-out-alt"></i></button>
+      </form>
+    </div>
+  </nav>
+  <div class="telacontainer">
+    <form>
+      <div class="form-group registroinput">
+        <label for="exampleInputEmail1">Confirme sua matricula:</label>
+        <input class="form-control" type="text" id="matriculaPonto" value=''>
+      </div>
+      <div class="form-group registroinput">
+        <label for="exampleFormControlSelect1">Tipo de ponto:</label>
+        <select class="form-control" id="tipoPonto">
+          <option>Selecione</option>
+          <option value="Entrada">Entrada</option>
+          <option value="Saida">Saida</option>
+        </select>
+      </div>
+      <div class="form-group registroinput">
+        <label for="exampleInputEmail1">Data do ponto</label>
+        <input class="form-control" type="date" id="dataPonto">
+      </div>
+      <div class="form-group registroinput">
+        <label for="exampleInputPassword1">Horário do ponto:</label>
+        <input class="form-control" type="time" id="horaPonto">
+      </div>
+      <div class="form-group registroinput">
+        <label for="exampleFormControlTextarea1">Observação:</label>
+        <textarea class="form-control" id="obsPonto" rows="3"></textarea>
+      </div>
+      <div class="registroinput">
+        <button type="submit" class="btn btn-outline-success btn-sm" onclick="incluirPonto()">Registrar ponto</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+    crossorigin="anonymous"></script>
+  <script>
+    async function carregaHistorico() {
+
+      var url_string = window.location.href.split('/');
+      id = url_string[4]
+      const response = await fetch('/api/schedules/' + id + '/single')
+      const data = await response.json()
+      let matricula = data.ponto.matricula
+      let tipo = data.ponto.tipo
+      let dataP = moment(data.ponto.data).format('YYYY-MM-DD');
+      let hora = moment(data.ponto.hora, 'HH:mm').format('HH:mm');
+      let observacao = data.ponto.observacao
+      console.log(matricula, tipo, dataP, hora, observacao)
+      document.getElementById('matriculaPonto').value = matricula;
+      document.getElementById('tipoPonto').value = tipo;
+      document.getElementById('dataPonto').value = dataP;
+      document.getElementById('horaPonto').value = hora;
+      document.getElementById('obsPonto').value = observacao;
+    }
+  </script>
+  <script>
+    function incluirPonto() {
+      const incluir = async () => {
+        const inputMatricula = document.getElementById('matriculaPonto')
+        const inputTipo = document.getElementById('tipoPonto')
+        const inputData = document.getElementById('dataPonto')
+        const inputHora = document.getElementById('horaPonto')
+        const inputObs = document.getElementById('obsPonto')
+
+        const req = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            matricula: inputMatricula.value,
+            tipo: inputTipo.value,
+            data: inputData.value,
+            hora: inputHora.value,
+            observacao: inputObs.value
+          })
+        }
+        const response = await fetch('/api/schedules/update', req)
+        console.log(response)
+      }
+      incluir()
+      
+    }
+  </script>
+</body>
+
+</html>

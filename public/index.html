@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Pagina Estatica</title>
+</head>
+<body>
+    <h1>Minha Pagina estatica pelo ExpressJS</h1>
+
+    {{#each funcionario}}
+        <div class="form-group registroinput">
+          <label for="nomeFuncionario">Nome:</label>
+          <input type="text" class="form-control" id="nomeFuncionario">
+        </div>
+        <div class="form-group registroinput">
+          <label for="matriculaFuncionario">Matricula:</label>
+          <input type="text" class="form-control" id="matriculaFuncionario">
+        </div>
+        <div class="form-group registroinput">
+          <label for="cargoFuncionario">Cargo:</label>
+          <select class="select2 form-control" id="cargoFuncionario">
+            <option>-</option>
+            <option value="gerenterh">Gerente de RH</option>
+            <option value="funcionario">Funcionário</option>
+          </select>
+        </div>
+        <div class="form-group registroinput">
+          <input type="text" class="form-control" id="ativoFuncionario" value="true" hidden>
+        </div>
+        <button onclick="incluirUsuario()">Incluir</button>
+
+    <div id="exemplo-api"></div>
+
+    <script>
+        
+        function incluirUsuario() {
+            const incluir = async () => {
+                const inputNome = document.getElementById('nomeFuncionario')
+                const inputMatricula = document.getElementById('matriculaFuncionario')
+                const inputCargo = document.getElementById('cargoFuncionario')
+                const inputAtivo = document.getElementById('ativoFuncionario')
+                // if (!input.value) {
+                //     alert('Nome inválido')
+                //     return
+                // }
+                // if (input.value.includes('@')) {
+                //     alert('Nome inválido2')
+                //     return
+                // }
+
+                const req = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nome: inputNome.value,
+                        matricula: inputMatricula.value,
+                        cargo: inputCargo.value,
+                        ativo: inputAtivo.value,
+                    })
+                }
+                const response = await fetch('/api/users', req)
+            }
+
+            incluir()
+        }
+
+        async function carregar() {
+            
+            const response = await fetch('/api/users')
+
+
+
+            const data = await response.json()
+            
+            const container = document.getElementById('exemplo-api')
+            let innerTable = []
+            for (const u of data) {
+                innerTable.push(`<tr><td>${u.id}</td><td>${u.nome}</td></tr>`)
+            }
+
+            container.innerHTML = `<table>${innerTable.join('')}</table>`
+            
+        }
+
+        carregar()
+        
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  <!-- CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.all.min.js"></script>
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/fe02716ff2.js" crossorigin="anonymous"></script>
+
+  <title>QQ | Edição de funcionário</title>
+  <link rel="sortcut icon" href="/static/img/favicon.ico" type="image/x-icon" />
+</head>
+
+<body container onload="carregaFuncionario()">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light navbarchanges">
+    <a class="logosidebar">
+      <img src="/static/img/logo_qq.png" width="30" height="30" alt="">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li>
+          <a href="/registro/" class="nav-link text-white navbarlink">
+            Registrar Ponto
+          </a>
+        </li>
+        <li>
+          <a href="/historico/" class="nav-link active text-white navbarlink">
+            Histórico de Pontos
+          </a>
+        </li>
+        <li>
+          <a href="/listagem-funcionario/" class="nav-link text-white navbarlink">
+            Funcionários
+          </a>
+        </li>
+      </ul>
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn btn-outline-light btn-logout" title="Desconectar"><i
+            class="fas fa-sign-out-alt"></i></button>
+      </form>
+    </div>
+  </nav>
+  <div class="telacontainer">
+    <form>
+      <div class="form-group registroinput">
+        <label for="nomeFuncionario">Nome:</label>
+        <input type="text" class="form-control" id="nomeFuncionario">
+      </div>
+      <div class="form-group registroinput">
+        <label for="matriculaFuncionario">Matricula:</label>
+        <input type="text" class="form-control" id="matriculaFuncionario" readonly>
+      </div>
+      <div class="form-group registroinput">
+        <label for="senhaFuncionario">Senha:</label>
+        <input type="password" class="form-control" id="senhaFuncionario" placeholder="Essa sera a senha de acesso">
+      </div>
+      <div class="form-group registroinput">
+        <label for="cargoFuncionario">Cargo:</label>
+        <select class=" form-control" id="cargoFuncionario">
+          <option>-</option>
+          <option value="gerenterh">Gerente de RH</option>
+          <option value="funcionario">Funcionário</option>
+        </select>
+      </div>
+      <div class="form-group registroinput">
+        <input type="text" class="form-control" id="ativoFuncionario" value="true" hidden>
+      </div>
+
+      <div class="registroinput">
+        <button type="submit" class="btn btn-outline-success btn-sm" onclick="incluirUsuario()">Registrar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+    crossorigin="anonymous"></script>
+  <script>
+    async function carregaFuncionario() {
+      var url_string = window.location.href.split('/');
+      id = url_string[4]
+      const response = await fetch('/api/users/' + id)
+      const data = await response.json()
+
+      let nome = data.user.nome
+      let matricula = data.user.matricula
+      //   let senha = 
+      let cargo = data.user.cargo
+      let ativo = data.user.ativo
+
+      document.getElementById('nomeFuncionario').value = nome;
+      document.getElementById('matriculaFuncionario').value = matricula;
+      document.getElementById('cargoFuncionario').value = cargo;
+    }
+  </script>
+  <script>
+    function incluirUsuario() {
+      const incluir = async () => {
+        const inputNome = document.getElementById('nomeFuncionario')
+        const inputMatricula = document.getElementById('matriculaFuncionario')
+        const inputSenha = document.getElementById('senhaFuncionario')
+        const inputCargo = document.getElementById('cargoFuncionario')
+        // if (!input.value) {
+        //     alert('Nome inválido')
+        //     return
+        // }
+        // if (input.value.includes('@')) {
+        //     alert('Nome inválido2')
+        //     return
+        // }
+
+        const req = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nome: inputNome.value,
+            matricula: inputMatricula.value,
+            senha: inputSenha.value,
+            cargo: inputCargo.value
+          })
+        }
+        const response = await fetch('/api/users/update', req)
+        console.log(response)
+      }
+
+      incluir()
+    }
+  </script>
+  <script>
+    function addFuncionario() {
+      Swal.fire({
+        position: 'center',
+        icon: 'question',
+        title: 'Tem certeza que deseja cadastrar o funcionário?',
+        showConfirmButton: true,
+        confirmButtonText: 'Sim!',
+        showCloseButton: true
+      });
+    };
+  </script>
+</body>
+
+</html>

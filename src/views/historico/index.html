@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <script src=""></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  <!-- CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.all.min.js"></script>
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/fe02716ff2.js" crossorigin="anonymous"></script>
+  <!-- moment -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+  <!-- Table HTML Export Js -->
+  <script src="/static/js/tableHTMLExport.js"></script>
+
+  <title>QQ | Histórico de ponto</title>
+  <link rel="sortcut icon" href="/static/img/favicon.ico" type="image/x-icon" />
+
+</head>
+
+<body container onload="carregaHistorico()">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light navbarchanges">
+    <a class="logosidebar">
+      <img src="/static/img/logo_qq.png" width="30" height="30" alt="">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li>
+          <a href="/registro/" class="nav-link text-white navbarlink">
+            Registrar Ponto
+          </a>
+        </li>
+        <li>
+          <a href="/historico/" class="nav-link active text-white navbarlink">
+            Histórico de Pontos
+          </a>
+        </li>
+        <li>
+          <a href="/listagem-funcionario/" class="nav-link text-white navbarlink">
+            Funcionários
+          </a>
+        </li>
+      </ul>
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn btn-outline-light btn-logout" title="Desconectar"><i
+            class="fas fa-sign-out-alt"></i></button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="horasTrabalhadas">
+    <p> Horas trabalhadas no mês*</p>
+    <div id="horaTrabalhada"></div>
+    <small class="form-text text-muted">
+      *Calculo estimado com o ponto de saida
+    </small>
+  </div>
+
+  <div class="telacontainer">
+
+    <div class="btnExportar">
+      <button type="submit" class="btn btn-outline-success btn-sm" id="btnExportar" onclick="exportcsv()"><i
+          class="fas fa-file-csv"></i></button>
+    </div>
+
+    <table class="table table-responsive" id="exportTable">
+      <thead>
+        <tr>
+          <th scope="col">Tipo de Ponto</th>
+          <th scope="col">Data</th>
+          <th scope="col">Horario</th>
+          <th scope="col">Observação</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody id="historicoPonto">
+      </tbody>
+    </table>
+  </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+    crossorigin="anonymous"></script>
+  <script>
+    async function carregaHistorico() {
+
+      cookie = document.cookie
+      const req = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          cookie: cookie
+        })
+      }
+
+      const user = await fetch('/api/users/getuser', req)
+      let u = await user.json();
+      u = u.user;
+
+      const tempoTrabalhado = await fetch('/api/schedules/time/' + u.matricula);
+      const tempo = await tempoTrabalhado.json();
+      if (tempo.hora < 0 || tempo.min < 0) {
+        document.getElementById('horaTrabalhada').innerHTML = "A hora será contabilizada quanto o ponto de saida for cadastrado!";
+      }else{
+        document.getElementById('horaTrabalhada').innerHTML = tempo.hora+":"+tempo.min;
+      }
+
+      const response = await fetch('/api/schedules/' + u.matricula);
+
+      const data = await response.json()
+      const container = document.getElementById('historicoPonto')
+      let innerTable = []
+      for (const ponto of data.ponto) {
+
+        let data = moment(ponto.data).format('DD/MM/YYYY');
+        let hora = moment(ponto.hora, 'HH:mm').format('HH:mm');
+        innerTable.push(`<tr><th scope="row">${ponto.tipo}</th>
+                        <td>${data}</td>
+                        <td>${hora}</td>
+                        <td>${ponto.observacao}</td>
+                        <td btn-funcionario>
+                          <form method="GET" action="/api/schedules/${ponto.id}/edit">
+                            <button type="submit" class="btn btn-outline-warning btn-edit" title="Editar ponto"><i class="far fa-edit"></i></button>
+                          </form>
+                        </td>
+                        <td btn-funcionario>
+                          <form method="POST" action="/api/schedules/${ponto.id}/delete">
+                            <button type="submit" class="btn btn-outline-danger btn-delete" title="Excluir ponto""><i class="fas fa-times"></i></button>
+                          </form>
+                        </td></tr>`)
+      }
+      container.innerHTML = `<table>${innerTable.join('')}</table>`
+    }
+  </script>
+  <script>
+    function exportcsv() {
+      $("#exportTable").tableHTMLExport({
+        type: 'csv',
+        filename: 'Relatorio-Ponto.csv',
+      });
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Histórico exportado com sucesso!',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    };
+  </script>
+  <script>
+    function deletePonto() {
+      Swal.fire({
+        position: 'center',
+        icon: 'question',
+        title: 'Tem certeza que deseja excluir esse ponto?',
+        showConfirmButton: true,
+        confirmButtonText: 'Sim!',
+        showCloseButton: true
+      });
+    };
+  </script>
+</body>
+
+</html>
